@@ -17,6 +17,92 @@
 Project to compile PDFium library to multiple platforms.
 </p>
 
+## How to compile for Checker Software use cases
+
+We are only going to use the wasm binaries for our purposes. You can either utilize a Ubuntu **20.04/22.04/24.04** instance or run a docker container instance. _Note that the minor ver .04 is important here as compiling it on a different minor .10 will not work._ Alternatively use the docker container to setup the compiling environment beforehand.
+
+NOTE: STEPS 1-3 IS ONLY REQUIRED TO BE RAN ONCE. OTHER STEPS MUST BE RAN EVERY TIME FOR A BUILD.
+
+1. Get the source, make sure that it is one commit ahead of upstream with `addFunction`, `removeFunction`, and `-sALLOW_TABLE_GROWTH` part of the wasm compilation exports.
+
+```
+git clone https://github.com/checkersoftware/pdfium-lib.git
+cd pdfium-lib
+```
+
+<details>
+<summary>Docker setup for if you are not using a standalone Ubuntu distro.</summary>
+<br>
+
+---
+
+1. Build the image with command (this is for macbooks with M series processors):
+
+```
+docker build --platform linux/amd64 -t pdfium-wasm -f docker/wasm/Dockerfile docker/wasm
+```
+
+2. Now you can open an interactive shell for the container with:
+
+```
+docker run --platform linux/amd64 -v ${PWD}:/app -it pdfium-wasm
+```
+
+Run the rest of the commands in this interactive shell.
+
+---
+
+<br>
+
+</details>
+<br>
+
+2. Install PIP requirements:
+
+```
+python3 -m pip install -r requirements.txt
+```
+
+3. Get Google Depot Tools:
+
+```
+python3 make.py build-depot-tools
+export PATH=$PATH:$PWD/build/depot-tools
+```
+
+From here forth only these steps need to be ran for compilation.
+
+4. Get Emscripten SDK:
+   `python3 make.py build-emsdk`
+
+5. Execute EMSDK environment file "emsdk_env" according to your system. For us this should be `/emsdk/emsdk_env.sh`
+
+6. Get PDFium:
+   `python3 make.py build-pdfium-wasm`
+
+7. Patch:
+   `python3 make.py patch-wasm`
+
+8. PDFium Linux dependencies
+   `./build/wasm32/pdfium/build/install-build-deps.sh`
+
+9. Compile:
+   `python3 make.py build-wasm`
+
+10. Install libraries:
+    `python3 make.py install-wasm`
+
+11. Test:
+    `python3 make.py test-wasm`
+
+12. Generate javascript libraries:
+    `python3 make.py generate-wasm`
+
+At this point you should be able to find `pdfium.js` and `pdfium.wasm` inside `./build/wasm32/wasm/release/node`, those replace the current `pdfium.js` and `pdfium.wasm` files in our projects.
+
+<br>
+<br>
+
 <br>
 
 ## Platforms
@@ -25,7 +111,7 @@ This project currently compiles to these platforms:
 
 - [x] iOS device (arm64)
 - [x] iOS simulator (x86_64, arm64)
-- [X] Android (armv7, armv8, x86, x86_64)
+- [x] Android (armv7, armv8, x86, x86_64)
 - [x] macOS (x86_64, arm64)
 - [x] WASM (Web Assembly)
 
@@ -55,52 +141,6 @@ https://pdfviewer.github.io/?title=Demo%20PDF%20with%201MB&url=https://raw.githu
 3. PIP
 
 Obs: Generally Python 3 already come with PIP installed. Check it with command `python3 -m pip --version`.
-
-## How to compile
-
-These are the `general` steps that need be executed `before all` others platforms steps.
-
-1. Get the source:
-
-```
-git clone https://github.com/paulocoutinhox/pdfium-lib.git
-cd pdfium-lib
-```
-
-2. Install PIP requirements:
-
-```
-python3 -m pip install -r requirements.txt
-```
-
-3. Get Google Depot Tools:
-
-```
-python3 make.py build-depot-tools
-export PATH=$PATH:$PWD/build/depot-tools
-```
-
-Obs:
-
-- The file `make.py` need be executed with Python version 3.
-- These steps you only need make `one` time.
-- If you want change `pdfium` git branch, edit file `modules/config.py` and others places with same branch name.
-
-## How to compile for iOS
-
-Check tutorial here: [Build for iOS](docs/BUILD_IOS.md)
-
-## How to compile for macOS (with Apple Silicon - M1)
-
-Check tutorial here: [Build for macOS](docs/BUILD_MACOS.md)
-
-## How to compile for Android
-
-Check tutorial here: [Build for Android](docs/BUILD_ANDROID.md)
-
-## How to compile for WASM
-
-Check tutorial here: [Build for WASM](docs/BUILD_WASM.md)
 
 ## Prebuilt binary
 
