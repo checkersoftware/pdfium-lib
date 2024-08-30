@@ -23,7 +23,7 @@ We are only going to use the wasm binaries for our purposes. You can either util
 
 NOTE: STEPS 1-3 IS ONLY REQUIRED TO BE RAN ONCE. OTHER STEPS MUST BE RAN EVERY TIME FOR A BUILD.
 
-1. Get the source, make sure that it is one commit ahead of upstream with `addFunction`, `removeFunction`, and `-sALLOW_TABLE_GROWTH` part of the wasm compilation exports.
+1. Get the source, make sure that it is commit(s) ahead of upstream with `addFunction`, `removeFunction`, and `-sALLOW_TABLE_GROWTH` part of the wasm compilation exports.
 
 ```
 git clone https://github.com/checkersoftware/pdfium-lib.git
