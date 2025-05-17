@@ -63,6 +63,16 @@ Run the rest of the commands in this interactive shell.
 python3 -m pip install -r requirements.txt
 ```
 
+You may need to setup a virtual environment on Ubuntu systems to use PIP without breaking system packages.
+
+```
+sudo apt install python3-venv
+python3 -m venv .
+source bin/activate
+```
+
+These commands install venv and set it up for the current directory.
+
 3. Get Google Depot Tools:
 
 ```
