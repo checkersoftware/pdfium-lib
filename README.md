@@ -21,6 +21,8 @@ Project to compile PDFium library to multiple platforms.
 
 We are only going to use the wasm binaries for our purposes. You can either utilize a Ubuntu **20.04/22.04/24.04** instance or run a docker container instance. _Note that the minor ver .04 is important here as compiling it on a different minor .10 will not work._ Alternatively use the docker container to setup the compiling environment beforehand.
 
+Note: It seems that only x86-64 architectures are supported, if running an ARM processor, using the docker method to emulate will work fine and reasonably fast.
+
 NOTE: STEPS 1-3 IS ONLY REQUIRED TO BE RAN ONCE. OTHER STEPS MUST BE RAN EVERY TIME FOR A BUILD.
 
 1. Get the source, make sure that it is commit(s) ahead of upstream with `addFunction`, `removeFunction`, and `-sALLOW_TABLE_GROWTH` part of the wasm compilation exports.
@@ -63,6 +65,21 @@ Run the rest of the commands in this interactive shell.
 python3 -m pip install -r requirements.txt
 ```
 
+<details>
+<br>
+<summary>You may need to setup a virtual environment on Ubuntu systems to use PIP without breaking system packages.</summary>
+
+```
+sudo apt install python3-venv
+python3 -m venv .
+source bin/activate
+```
+
+<br>
+</details>
+
+These commands install venv and set it up for the current directory.
+
 3. Get Google Depot Tools:
 
 ```
@@ -73,30 +90,64 @@ export PATH=$PATH:$PWD/build/depot-tools
 From here forth only these steps need to be ran for compilation.
 
 4. Get Emscripten SDK:
-   `python3 make.py build-emsdk`
 
-5. Execute EMSDK environment file "emsdk_env" according to your system. For us this should be `/emsdk/emsdk_env.sh`
+   ```
+   python3 make.py build-emsdk
+   ```
+
+5. The command to execute the EMSDK enviroment file may fail, you may need to manually set it up with: (or something simliar). Not exactly sure why it doesn't run successfully from the script.
+
+   ```
+   source build/emsdk/emsdk_env.sh
+   ```
 
 6. Get PDFium:
-   `python3 make.py build-pdfium-wasm`
+
+   ```
+   python3 make.py build-pdfium-wasm
+   ```
 
 7. Patch:
-   `python3 make.py patch-wasm`
+
+   ```
+   python3 make.py patch-wasm
+   ```
 
 8. PDFium Linux dependencies
-   `./build/wasm32/pdfium/build/install-build-deps.sh`
+
+   ```
+   ./build/wasm32/pdfium/build/install-build-deps.sh
+   ```
 
 9. Compile:
-   `python3 make.py build-wasm`
+
+   ```
+   python3 make.py build-wasm
+   ```
+
+   You may get an error asking you to initialize depot_tools:
+
+   ```
+   export DEPOT_TOOLS_UPDATE=1
+   update_depot_tools
+   ```
 
 10. Install libraries:
-    `python3 make.py install-wasm`
+
+    ```
+    python3 make.py install-wasm
+    ```
 
 11. Test:
-    `python3 make.py test-wasm`
+
+    ```
+    python3 make.py test-wasm
+    ```
 
 12. Generate javascript libraries:
-    `python3 make.py generate-wasm`
+    ```
+    python3 make.py generate-wasm
+    ```
 
 At this point you should be able to find `pdfium.js` and `pdfium.wasm` inside `./build/wasm32/wasm/release/node`, those replace the current `pdfium.js` and `pdfium.wasm` files in our projects.
 
