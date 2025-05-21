@@ -38,7 +38,7 @@ RUN mkdir /build
 WORKDIR /build
 RUN gclient config --custom-var checkout_configuration=minimal --unmanaged https://pdfium.googlesource.com/pdfium.git
 RUN echo "target_os = [ 'wasm' ]" >> .gclient
-RUN gclient sync -r origin/chromium/6694 --no-history --shallow
+RUN gclient sync -r origin/chromium/7049 --no-history --shallow
 
 # pdfium reset and clean directories
 RUN git -C /build/pdfium reset --hard
@@ -60,11 +60,11 @@ RUN git status
 # system dependencies
 RUN ln -s /usr/bin/python3 /usr/bin/python
 
-RUN apt-get install -o APT::Immediate-Configure=false -f apt \
+RUN apt-get -y install -o APT::Immediate-Configure=false -f apt \
     && apt-get -f install \
     && dpkg --configure -a \
-    && apt-get -y dist-upgrade \
-    && echo n | ./build/install-build-deps.sh \
+    && apt-get -f dist-upgrade \
+    && echo y | ./build/install-build-deps.sh \
     && rm -rf /build
 
 # ninja
@@ -78,8 +78,8 @@ RUN pip3 install setuptools docopt pygemstones
 RUN mkdir /emsdk
 WORKDIR /emsdk
 RUN git clone https://github.com/emscripten-core/emsdk.git .
-RUN ./emsdk install 3.1.64
-RUN ./emsdk activate 3.1.64
+RUN ./emsdk install 3.1.74
+RUN ./emsdk activate 3.1.74
 ENV PATH="${PATH}:/emsdk:/emsdk/upstream/emscripten"
 
 # cache system libraries
@@ -87,7 +87,7 @@ RUN bash -c 'echo "int main() { return 0; }" > /tmp/main.cc'
 RUN bash -c 'source /emsdk/emsdk_env.sh && em++ -s USE_ZLIB=1 -s USE_LIBJPEG=1 -s USE_PTHREADS=1 -s ASSERTIONS=1 -o /tmp/main.html /tmp/main.cc'
 
 # nodejs and npm
-RUN curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+RUN curl -sL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 RUN apt-get install -y nodejs
 RUN npm install -g npm@latest
 
