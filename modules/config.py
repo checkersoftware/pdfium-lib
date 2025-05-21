@@ -4,7 +4,7 @@ task = ""
 
 # pdfium
 pdfium_git_branch = "chromium/7049"
-# ^ ref: https://pdfium.googlesource.com/pdfium/+/refs/heads/chromium/7188
+# ^ ref: https://pdfium.googlesource.com/pdfium/+/refs/heads/chromium/7049
 # OBS 1: don't forget change in android docker file (docker/android/Dockerfile)
 # OBS 2: don't forget change in wasm docker file (docker/wasm/Dockerfile)
 
